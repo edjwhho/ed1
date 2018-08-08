@@ -23,7 +23,7 @@ resource "aws_security_group" "sg" {
 resource "aws_instance" "testserver1" {
   ami = "ami-2d39803a"
   instance_type = "t2.micro"
-  security_group = "sg"
+#  security_group = "sg"
 
   user_data = <<-EOF
               #!/bin/bash
