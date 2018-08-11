@@ -3,27 +3,37 @@ provider "aws" {
 }
 
 
-resource "aws_security_group" "sg" {
-  name        = "allow_8080"
-  description = "Allow all inbound traffic"
+#resource "aws_key_pair" "auth" {
+#  key_name   = "${var.key_name}"
+#  public_key = "${file(var.public_key_path)}"
+#}
 
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["90.255.159.132/32"]
-  }
 
-  tags {
-    Name = "allow_8080"
-    "type" = "terraform-test-security-group"
-  }
-}
- 
 resource "aws_instance" "testserver1" {
+  # The connection block tells our provisioner how to
+  # communicate with the resource (instance)
+  connection {
+    # The default username for our AMI
+    user = "ubuntu"
+
+    # The connection will use the local SSH agent for authentication.
+  }
+
   ami = "ami-2d39803a"
   instance_type = "t2.micro"
-#  security_group = "sg"
+
+  # The name of our SSH keypair we created above.
+#  key_name = "${aws_key_pair.auth.id}"
+
+  #our Security group to allow HTTP and SSH access
+  #vpc_security_group_ids = ["${aws_security_group.default.id}"]
+  vpc_security_group_ids = ["${aws_security_group.DEV_TEST_Security_Group.id}"]
+
+  # We're going to launch into the same subnet as our ELB. In a production
+  # environment it's more common to have a separate private subnet for
+  # backend instances.
+  #subnet_id = "${aws_subnet.default.id}"
+  subnet_id = "${aws_vpc.DEV_TEST.id}"
 
   user_data = <<-EOF
               #!/bin/bash
@@ -36,7 +46,3 @@ resource "aws_instance" "testserver1" {
   }
 }
 
-resource "aws_network_interface_sg_attachment" "sg_attachment" {
-  security_group_id    = "${aws_security_group.sg.id}"
-  network_interface_id = "${aws_instance.testserver1.primary_network_interface_id}"
-}
