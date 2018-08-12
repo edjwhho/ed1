@@ -56,43 +56,43 @@ ingress {
 } # end resource
 
 # create VPC Network access control list
-resource "aws_network_acl" "DEV_TEST_Security_ACL" {
-  vpc_id = "${aws_vpc.DEV_TEST.id}"
-  subnet_ids = [ "${aws_subnet.DEV_TEST_Subnet.id}" ]
+##resource "aws_network_acl" "DEV_TEST_Security_ACL" {
+#  vpc_id = "${aws_vpc.DEV_TEST.id}"
+#  subnet_ids = [ "${aws_subnet.DEV_TEST_Subnet.id}" ]
 	# allow port 22
-  	ingress {
-    		protocol   = "tcp"
-    		rule_no    = 100
-    		action     = "allow"
-    		cidr_block = "${var.destinationCIDRblock}" 
-    		from_port  = 22
-    		to_port    = 22
-  		}
+# 	ingress {
+#    		protocol   = "tcp"
+#    		rule_no    = 100
+#    		action     = "allow"
+#    		cidr_block = "${var.destinationCIDRblock}" 
+#    		from_port  = 22
+#    		to_port    = 22
+# 		}
 
 	# allow ingress ephemeral ports 
-  	ingress {
-    		protocol   = "tcp"
-	    	rule_no    = 200
-    		action     = "allow"
-    		cidr_block = "${var.destinationCIDRblock}"
-    		from_port  = 8080
-    		to_port    = 8080
-    		#from_port  = 1024
-    		#to_port    = 65535
-  		}
+#  	ingress {
+#    		protocol   = "tcp"
+#	    	rule_no    = 200
+#    		action     = "allow"
+#   		cidr_block = "${var.destinationCIDRblock}"
+    		#from_port  = 8080
+    		#to_port    = 8080
+#    		from_port  = 1024
+#    		to_port    = 65535
+#  		}
 	# allow egress ephemeral ports
-  	egress {
-    		protocol   = "tcp"
-    		rule_no    = 100
-    		action     = "allow"
-    		cidr_block = "${var.destinationCIDRblock}"
-    		from_port  = 1024
-    		to_port    = 65535
-  		}
-	tags {
-    	Name = "DEV TEST ACL"
-  	}
-} # end resource
+#  	egress {
+#    		protocol   = "tcp"
+#    		rule_no    = 100
+#    		action     = "allow"
+#    		cidr_block = "${var.destinationCIDRblock}"
+#    		from_port  = 1024
+#    		to_port    = 65535
+#  		}
+#	tags {
+#    	Name = "DEV TEST ACL"
+#  	}
+#} # end resource
 
 # Create the Internet Gateway
 resource "aws_internet_gateway" "DEV_TEST_GW" {
@@ -119,10 +119,10 @@ resource "aws_route" "DEV_TEST_internet_access" {
 
 # Associate the Route Table with the Subnet
 
-# resource "aws_route_table_association" "DEV_TEST_association" {
-#    subnet_id      = "${aws_subnet.DEV_TEST_Subnet.id}"
-#    route_table_id = "${aws_route_table.DEV_TEST_route_table.id}"
-# } # end resource
+ resource "aws_route_table_association" "DEV_TEST_association" {
+    subnet_id      = "${aws_subnet.DEV_TEST_Subnet.id}"
+    route_table_id = "${aws_route_table.DEV_TEST_route_table.id}"
+ } # end resource
 
 # end vpc.tf
 

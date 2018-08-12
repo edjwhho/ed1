@@ -7,6 +7,10 @@ variable "tagnames" {
 	default= "DEV_TEST1"
 }
 
+#variable "key_name" {
+#  description = "terraform testserver1 public key"
+#}
+
 variable "availabilityZone" {
         default = "us-east-1a"
 }
@@ -37,7 +41,7 @@ variable "destinationCIDRblock" {
 
 variable "ingressCIDRblock" {
         type = "list"
-        default = [ "0.0.0.0/0" ]
+        default = [ "90.253.62.244/32" ]
 }
 
 variable "mapPublicIP" {
