@@ -18,9 +18,10 @@ terraform {
 }
 
 resource "aws_key_pair" "auth" {
-  key_name   = "aws1"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCv6Zb80wipqqAm2TZAKDF7jJzDvMR9QeEO7rrjAy7B/0GiYqmJOeajvQMzZ/8djhx0GkxzMuYNy/QIqjLkckZkWQ5OAEi0Jqt2IlmghwFWE72W591pPjRAQCNnD1EC72ifuTyxQxziAraaJ2f9+dBuoHUJDbfRNwq3fFl2jsfttG98y09RXqgsEuHqCKNr4UaaGk2jrAykZuztZIjkxvIRVhbQlDzeBi8G1Argu8nmamg/sHTZgLDVjPnmDZz7Z3qGlwi6FsIIabQ8gsYVB5bPbePkZqtpXGNk5wvEAifxoJa8myZTYZgBOo07gJPHXjnzdK/tI6yH4369LCPvgkVRaf+u4o/XFiX1Ci/zj4MmPogelUEF9zFLAKRWJKb11Gp0uP0rb88ZT2txzZK6UWiZehKNCJiSFFQ/JdznC8+JyVw8/BwjHSFElNfrCTaIRQnZlncT7lPW5g8I/Frr9hkcuJQ7440yeZfr81OAqoE+rSNWQ/o2IfXVDkjLSinz2tUfvOja2opozF1nrKmNimUIJlN+Ir2AxqJDNmxv5J1bPxP1R/CvjKKpAWjAfU2BMwWmS51/362mm0W77dD+MnZBton+xKfZ4JcEqO+taVZEMtrTyFbAznzaOqv3GMaAw+D0z/OkH+UqWw/kG4dtyVPdyS+ZSV6lL46ZiSUiy3xIzQ== your_email@example.com"
+  key_name   = "${var.key_name}"
+  public_key = "${var.pub_key}"
 }
+
 
 resource "aws_instance" "testserver1" {
   # The connection block tells our provisioner how to
