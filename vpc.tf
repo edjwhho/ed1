@@ -2,9 +2,20 @@
 # Create VPC/Subnet/Security Group/ACL
 
 provider "aws" {
-  region = "us-east-1"
+  #region = "us-east-1"
+  region = "us-west-1"
+  skip_region_validation = true
 }
 
+terraform {
+ backend "s3" {
+ encrypt = true
+ bucket = "ts1-states-s3"
+ region = "us-west-1"
+ #region = "us-east-1"
+ key = "ed1/terraform.tfstate"
+ }
+}
 
 # create the VPC
 resource "aws_vpc" "DEV_TEST" {
@@ -45,8 +56,8 @@ ingress {
   # HTTP access from the VPC
   ingress {
     cidr_blocks = "${var.ingressCIDRblock}"  
-    from_port   = 8080
-    to_port     = 8080
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
   }
 
@@ -56,43 +67,43 @@ ingress {
 } # end resource
 
 # create VPC Network access control list
-##resource "aws_network_acl" "DEV_TEST_Security_ACL" {
-#  vpc_id = "${aws_vpc.DEV_TEST.id}"
-#  subnet_ids = [ "${aws_subnet.DEV_TEST_Subnet.id}" ]
+resource "aws_network_acl" "DEV_TEST_Security_ACL" {
+  vpc_id = "${aws_vpc.DEV_TEST.id}"
+  subnet_ids = [ "${aws_subnet.DEV_TEST_Subnet.id}" ]
 	# allow port 22
-# 	ingress {
-#    		protocol   = "tcp"
-#    		rule_no    = 100
-#    		action     = "allow"
-#    		cidr_block = "${var.destinationCIDRblock}" 
-#    		from_port  = 22
-#    		to_port    = 22
-# 		}
+ 	ingress {
+    		protocol   = "tcp"
+    		rule_no    = 100
+    		action     = "allow"
+    		cidr_block = "${var.destinationCIDRblock}" 
+    		from_port  = 22
+    		to_port    = 22
+ 		}
 
 	# allow ingress ephemeral ports 
-#  	ingress {
-#    		protocol   = "tcp"
-#	    	rule_no    = 200
-#    		action     = "allow"
-#   		cidr_block = "${var.destinationCIDRblock}"
-    		#from_port  = 8080
-    		#to_port    = 8080
-#    		from_port  = 1024
-#    		to_port    = 65535
-#  		}
+  	ingress {
+    		protocol   = "tcp"
+	    	rule_no    = 200
+    		action     = "allow"
+   		cidr_block = "${var.destinationCIDRblock}"
+    		from_port  = 80
+    		to_port    = 80
+    		#from_port  = 1024
+    		#to_port    = 65535
+  		}
 	# allow egress ephemeral ports
-#  	egress {
-#    		protocol   = "tcp"
-#    		rule_no    = 100
-#    		action     = "allow"
-#    		cidr_block = "${var.destinationCIDRblock}"
-#    		from_port  = 1024
-#    		to_port    = 65535
-#  		}
-#	tags {
-#    	Name = "DEV TEST ACL"
-#  	}
-#} # end resource
+  	egress {
+    		protocol   = "tcp"
+    		rule_no    = 100
+    		action     = "allow"
+    		cidr_block = "${var.destinationCIDRblock}"
+    		from_port  = 1024
+    		to_port    = 65535
+  	}
+	tags {
+    	Name = "DEV TEST ACL"
+  	}
+} # end resource
 
 # Create the Internet Gateway
 resource "aws_internet_gateway" "DEV_TEST_GW" {
@@ -125,48 +136,4 @@ resource "aws_route" "DEV_TEST_internet_access" {
  } # end resource
 
 # end vpc.tf
-
-
-#resource "aws_key_pair" "auth" {
-#  key_name   = "${var.key_name}"
-#  public_key = "${file(var.public_key_path)}"
-#}
-
-
-resource "aws_instance" "testserver1" {
-  # The connection block tells our provisioner how to
-  # communicate with the resource (instance)
-  connection {
-    # The default username for our AMI
-    user = "ubuntu"
-
-    # The connection will use the local SSH agent for authentication.
-  }
-
-  ami = "ami-2d39803a"
-  instance_type = "t2.micro"
-
-  # The name of our SSH keypair we created above.
-#  key_name = "${aws_key_pair.auth.id}"
-
-  #our Security group to allow HTTP and SSH access
-  #vpc_security_group_ids = ["${aws_security_group.default.id}"]
-  vpc_security_group_ids = ["${aws_security_group.DEV_TEST_Security_Group.id}"]
-
-  # We're going to launch into the same subnet as our ELB. In a production
-  # environment it's more common to have a separate private subnet for
-  # backend instances.
-  #subnet_id = "${aws_subnet.default.id}"
-  subnet_id = "${aws_subnet.DEV_TEST_Subnet.id}"
-
-  user_data = <<-EOF
-              #!/bin/bash
-              echo "Hello, World" > index.html
-              nohup busybox httpd -f -p 8080 &
-              EOF
-  tags {
-
-    Name = "terraform_test"
-  }
-}
 
