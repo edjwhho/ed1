@@ -1,18 +1,12 @@
 # vpc.tf 
 # Create VPC/Subnet/Security Group/ACL
 
-provider "aws" {
-  #region = "us-east-1"
-  region = "us-west-1"
-  skip_region_validation = true
-}
 
 terraform {
  backend "s3" {
  encrypt = true
  bucket = "ts1-states-s3"
  region = "us-west-1"
- #region = "us-east-1"
  key = "ed1/terraform.tfstate"
  }
 }
@@ -40,6 +34,7 @@ resource "aws_subnet" "DEV_TEST_Subnet" {
   	}
 } # end resource
 
+###  
 # Create the Security Group
 resource "aws_security_group" "DEV_TEST_Security_Group" {
   vpc_id       = "${aws_vpc.DEV_TEST.id}"
@@ -47,25 +42,25 @@ resource "aws_security_group" "DEV_TEST_Security_Group" {
   description  = "DEV TEST Security Group"
 
 ingress {
-    cidr_blocks = "${var.ingressCIDRblock}"  
+    cidr_blocks = "${var.ingressCIDRblock}"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
   }
-
   # HTTP access from the VPC
   ingress {
-    cidr_blocks = "${var.ingressCIDRblock}"  
+    cidr_blocks = "${var.ingressCIDRblock}"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
   }
 
-	tags = {
+        tags = {
         Name = "DEV TEST Security Group"
   }
 } # end resource
 
+###
 # create VPC Network access control list
 resource "aws_network_acl" "DEV_TEST_Security_ACL" {
   vpc_id = "${aws_vpc.DEV_TEST.id}"

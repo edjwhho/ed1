@@ -15,7 +15,6 @@ variable "tagnames" {
 
 variable "availabilityZone" {
         default = "us-west-1a"
-        #default = "us-east-1a"
 }
 
 variable "instanceTenancy" {
@@ -44,7 +43,7 @@ variable "destinationCIDRblock" {
 
 variable "ingressCIDRblock" {
         type = "list"
-        default = [ "90.255.132.223/32" ]
+        default = [ "90.254.132.108/32" ]
 }
 
 variable "mapPublicIP" {
